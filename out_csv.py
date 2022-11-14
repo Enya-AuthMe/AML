@@ -26,11 +26,10 @@ y = pd.read_csv(y_path)
 
 
 # def 們
-def give_event(idx):
-    key = train_date['alert_key'][idx]
-    date = train_date['date'][idx]
-    id = custinfo[custinfo['alert_key'] == key]['cust_id']
-    id = id.values[0]
+def give_event(idx, dateset):
+    key = dateset['alert_key'][idx]
+    date = dateset['date'][idx]
+    id = custinfo[custinfo['alert_key'] == key]['cust_id'].values[0]
     sar = y['sar_flag'][idx]
     return key, id, date, sar
 
@@ -91,9 +90,11 @@ def table(key, id, date, sar):
 
 
 df = pd.DataFrame()
-for i in tqdm(range(len(train_date))):
-    key, id, date, sar = give_event(idx=i)
+for i in tqdm(range(len(test_date))):
+    key, id, date, sar = give_event(idx=i, dateset=test_date)
     row = table(key=key, id=id, date=date, sar=sar)
     df = pd.concat([df, row])
 
 breakpoint()
+
+# df.to_csv('./testset_ex1.csv',index=False)
