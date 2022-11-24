@@ -1,8 +1,5 @@
-# 輸出 csv
-import numpy as np
 import pandas as pd
 from tqdm import tqdm
-import torch
 
 # original csv path
 ccba = './訓練資料集_first/public_train_x_ccba_full_hashed.csv'
@@ -23,6 +20,9 @@ remit = pd.read_csv(remit)
 test_date = pd.read_csv(date)
 train_date = pd.read_csv(train_date)
 y = pd.read_csv(y_path)
+
+# Control section
+data_mode = 'test'  # 'train' or 'test'
 
 
 # def 們
@@ -89,9 +89,18 @@ def table(key, id, date, sar):
     return df
 
 
+def get_data_date():
+    if data_mode == 'train':
+        data_date = train_date
+    else:
+        data_date = test_date
+    return data_date
+
+
+data_date = get_data_date()
 df = pd.DataFrame()
-for i in tqdm(range(len(test_date))):
-    key, id, date, sar = give_event(idx=i, dateset=test_date)
+for i in tqdm(range(len(data_date))):
+    key, id, date, sar = give_event(idx=i, dateset=data_date)
     row = table(key=key, id=id, date=date, sar=sar)
     df = pd.concat([df, row])
 
