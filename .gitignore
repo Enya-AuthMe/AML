@@ -1,7 +1,11 @@
 訓練資料集_first
 Class_Dataset
 graph
+model
 訓練資料欄位說明_改.numbers
 訓練資料欄位說明.xlsx
 預測的案件名單及提交檔案範例 copy.csv
 trash
+submi
+crime
+out_csv_ex2.py
