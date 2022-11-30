@@ -3,11 +3,12 @@ import joblib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn import svm
 from sklearn.decomposition import PCA
+import sklearn.naive_bayes as NB
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score
 from sklearn.model_selection import KFold, cross_val_score, train_test_split, GridSearchCV
+from sklearn.ensemble import RandomForestClassifier
 from pretty_confusion_matrix import pp_matrix
 
 trainset_path = './Class_Dataset/trainset/trainset_ex1_minmax.csv'
@@ -17,7 +18,7 @@ df = pd.read_csv(trainset_path)  # 22744
 df_test_org = pd.read_csv(testset_path)
 df_test = df_test_org.drop(['alert_key'], axis=1, inplace=False)
 submi = pd.read_csv(submi_path)
-model_name = './ex1_2_svc0'
+model_name = './ex1_4_NB'
 
 
 def contest_eval(y_pred, y_proba, y_test):
@@ -33,18 +34,12 @@ def contest_eval(y_pred, y_proba, y_test):
     return evaluation
 
 
-def printing_Kfold_scores(x_train_data, y_train_data): 
+def printing_Kfold_scores(x_train_data, y_train_data):
     x_train, x_calib, y_train, y_calib = train_test_split(x_train_data, y_train_data, test_size=0.2, random_state=42)
-    # param_grid = {'nu':[0.5, 0.75], 'coef0':[0, 1, 5, 100], 'kernel':['rbf']}
-    # model = GridSearchCV(svm.NuSVC( probability=True), param_grid, verbose=3)
-
-    svc = svm.SVC(probability=True, kernel='rbf', C=2250, gamma=0.002, random_state=42)
-    nusvc = svm.NuSVC(probability=True)
-    nusvc.fit(x_train.values, y_train.values.ravel())
-    calib_model = CalibratedClassifierCV(nusvc, cv='prefit', method='isotonic')
-    calib_model.fit(x_calib.values, y_calib.values.ravel())
-    y_pred = calib_model.predict(x_calib.values)
-    y_proba = calib_model.predict_proba(x_calib.values)
+    model = NB.ComplementNB()
+    model.fit(x_train.values, y_train.values.ravel())
+    y_pred = model.predict(x_calib.values)
+    y_proba = model.predict_proba(x_calib.values)
     recall = recall_score(y_calib.values, y_pred)
     precision = precision_score(y_calib.values, y_pred)
     f1 = f1_score(y_calib.values, y_pred)
@@ -52,7 +47,7 @@ def printing_Kfold_scores(x_train_data, y_train_data):
     print('--- Training ---')
     print('recall %.3f | precision %.3f | f1 %.3f | contest %.3f' %
           (recall, precision, f1, evaluation))
-    joblib.dump(calib_model, model_name)
+    joblib.dump(model, model_name)
 
 
 def plot_confusion_matrix(cm, classes, title='Confusion matrix', cmap=plt.cm.Blues):
@@ -142,7 +137,6 @@ df_cnf = pd.DataFrame(data=cnf_matrix, index=[0, 1], columns=[0, 1])
 
 # contest eval
 evaluation = contest_eval(Y_pred, Y_proba, Y_test.to_numpy().reshape(-1))
-
 print_result(Y_test, Y_pred, evaluation)
 
 # contest prediction

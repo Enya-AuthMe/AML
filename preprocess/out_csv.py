@@ -23,7 +23,7 @@ y = pd.read_csv(y_path)
 
 # Control section
 data_mode = 'test'  # 'train' or 'test'
-
+breakpoint()
 
 # def 們
 def give_event(idx, dateset):
