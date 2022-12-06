@@ -204,6 +204,7 @@ def ccba_row(id, mon):
     else:
         row2 = pd.DataFrame.from_dict(
             {x: np.nan for x in row}, orient='index').T
+    row2 = row2.drop(columns=['cust_id'])
     return row2
 
 
@@ -349,10 +350,9 @@ def event_row(key, id, event_date, sar):
     row3 = cdtx_row(event_date, mon)
     row3 = row3.reset_index(drop=True)
 
-    # # 5 remi
+    # # 5 remit
     row5 = remit_row(event_date, mon)
     row5 = row5.reset_index(drop=True)
-
     df_row = pd.concat([row1, row2, row3, row5, the_date, the_SAR], axis=1)
     return df_row
 
