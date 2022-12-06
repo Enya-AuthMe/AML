@@ -345,19 +345,6 @@ def event_row(key, id, event_date, sar):
     row3 = cdtx_row(event_date, mon)
     row3 = row3.reset_index(drop=True)
 
-    # # 4 dp
-    # dp_id = dp.loc[dp['cust_id'] == id, :]
-    # today, flg = feature_tools.find_today_date(
-    #     dp_id, 'tx_date', event_date, mon)
-    # col4 = ['debit_credit',
-    #         'tx_type_info_asset_code', 'tx_type_asset_code_last_day', 'tx_type_info_asset_code_history', '?',
-    #         'fiscTxId', 'fiscTxId_last_day', 'fiscTxId_history', 'txbranch', 'txbranch_history', 'ATM', 'dp__trans_num',
-    #         'cdtx_trans_num_last_day']
-    # arr = np.zeros((len(col4)))
-    # if len(dp_id.loc[dp_id['tx_date'] == today]) != 0:
-    #     breakpoint()
-    # else:
-    #     arr[:] = np.nan
 
     # 5 remi
     row5 = remit_row(event_date, mon)
@@ -365,12 +352,6 @@ def event_row(key, id, event_date, sar):
 
     df_row = pd.concat([row1, row2, row3, row5, the_date, the_SAR], axis=1)
     return df_row
-
-    # df = table1
-    # # df = df.merge(table2, how='outer', on=['cust_id'])
-    # df = df.reset_index(drop=True)
-    # df = pd.concat([df, num2, num3, num4, num5, the_date, the_SAR], axis=1)
-    # return df
 
 
 def get_data_date():
