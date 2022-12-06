@@ -185,7 +185,6 @@ def give_event(idx, dateset):
 
 def custinfo_row(key):
     row1 = custinfo.loc[custinfo['alert_key'] == key, :]
-    row1.drop(columns=['cust_id'])
     return row1
 
 
@@ -193,13 +192,18 @@ def ccba_row(id, mon):
     ccba_id = ccba.loc[ccba['cust_id'] == id, :]
     row = ccba_id[ccba_id['byymm'] == mon]
     dict2 = {'cuse_rate': []}
-    if len(row['usgam']) * len(row['cycam']) == 0:
-        dict2['cuse_rate'] = np.nan
+    if len(row) != 0:
+        if row['usgam'].values[0] * row['cycam'].values[0] != 0:
+            dict2['cuse_rate'] = row['usgam'].values[0] / \
+                row['cycam'].values[0]
+        else:
+            dict2['cuse_rate'] = 0
+        cuse_rate = pd.DataFrame(dict2, index=[0])
+        row = row.reset_index(drop=True)
+        row2 = pd.concat([row, cuse_rate], axis=1)
     else:
-        dict2['cuse_rate'] = row['usgam'].values[0] / row['cycam'].values[0]
-    cuse_rate = pd.DataFrame(dict2, index=[0])
-    row = row.reset_index(drop=True)
-    row2 = pd.concat([row, cuse_rate], axis=1)
+        row2 = pd.DataFrame.from_dict(
+            {x: np.nan for x in row}, orient='index').T
     return row2
 
 
@@ -333,20 +337,19 @@ def event_row(key, id, event_date, sar):
     the_SAR = pd.DataFrame({'sar': [sar]})
 
     mon = feature_tools.find_month_firstday(date=event_date)
-    # 1 custinfo
+    # # 1 custinfo
     row1 = custinfo_row(key)
     row1 = row1.reset_index(drop=True)
 
-    # 2 ccba
+    # # 2 ccba
     row2 = ccba_row(id, mon)
     row2 = row2.reset_index(drop=True)
 
-    # 3 cdtx
+    # # 3 cdtx
     row3 = cdtx_row(event_date, mon)
     row3 = row3.reset_index(drop=True)
 
-
-    # 5 remi
+    # # 5 remi
     row5 = remit_row(event_date, mon)
     row5 = row5.reset_index(drop=True)
 
@@ -366,7 +369,7 @@ ls = []
 data_date = get_data_date()
 df = pd.DataFrame()
 for i in tqdm(range(len(data_date))):
-# for i in tqdm(range(500)):
+    # for i in tqdm(range(500)):
     key, id, date, sar = give_event(idx=i, dateset=data_date)
     row = event_row(key=key, id=id, event_date=date, sar=sar)
     df = pd.concat([df, row])
