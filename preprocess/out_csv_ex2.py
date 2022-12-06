@@ -373,7 +373,7 @@ for i in tqdm(range(len(data_date))):
     key, id, date, sar = give_event(idx=i, dateset=data_date)
     row = event_row(key=key, id=id, event_date=date, sar=sar)
     df = pd.concat([df, row])
-    df.reset_index(drop=True)
+    df = df.reset_index(drop=True)
 
 breakpoint()
 
