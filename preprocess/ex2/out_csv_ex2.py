@@ -338,22 +338,37 @@ def event_row(key, id, event_date, sar):
     the_SAR = pd.DataFrame({'sar': [sar]})
 
     mon = feature_tools.find_month_firstday(date=event_date)
-    # # 1 custinfo
+    # 1 custinfo
     row1 = custinfo_row(key)
     row1 = row1.reset_index(drop=True)
 
-    # # 2 ccba
+    # 2 ccba
     row2 = ccba_row(id, mon)
     row2 = row2.reset_index(drop=True)
 
-    # # 3 cdtx
+    # 3 cdtx
     row3 = cdtx_row(event_date, mon)
     row3 = row3.reset_index(drop=True)
+
+    # 4 dp
+    dp_id = dp.loc[dp['cust_id'] == id, :]
+    today, flg = feature_tools.find_today_date(
+        dp_id, 'tx_date', event_date, mon)
+    col4 = ['debit_credit',
+            'tx_type_info_asset_code', 'tx_type_asset_code_last_day', 'tx_type_info_asset_code_history', '?',
+            'fiscTxId', 'fiscTxId_last_day', 'fiscTxId_history', 'txbranch', 'txbranch_history', 'ATM', 'dp__trans_num',
+            'cdtx_trans_num_last_day']
+    breakpoint()
+    arr = np.zeros((len(col4)))
+    if len(dp_id.loc[dp_id['tx_date'] == today]) != 0:
+        breakpoint()
+    else:
+        arr[:] = np.nan
 
     # # 5 remit
     row5 = remit_row(event_date, mon)
     row5 = row5.reset_index(drop=True)
-    df_row = pd.concat([row1, row2, row3, row5, the_date, the_SAR], axis=1)
+    df_row = pd.concat([the_date, the_SAR, row1, row2, row3, row5], axis=1)
     return df_row
 
 
@@ -368,8 +383,8 @@ def get_data_date():
 ls = []
 data_date = get_data_date()
 df = pd.DataFrame()
-for i in tqdm(range(len(data_date))):
-    # for i in tqdm(range(500)):
+# for i in tqdm(range(len(data_date))):
+for i in tqdm(range(500)):
     key, id, date, sar = give_event(idx=i, dateset=data_date)
     row = event_row(key=key, id=id, event_date=date, sar=sar)
     df = pd.concat([df, row])
