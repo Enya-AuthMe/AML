@@ -25,7 +25,7 @@ y = pd.read_csv(y_path)
 data_mode = 'test'  # 'train' or 'test'
 breakpoint()
 
-# def 們
+
 def give_event(idx, dateset):
     key = dateset['alert_key'][idx]
     date = dateset['date'][idx]
@@ -103,6 +103,7 @@ for i in tqdm(range(len(data_date))):
     key, id, date, sar = give_event(idx=i, dateset=data_date)
     row = table(key=key, id=id, date=date, sar=sar)
     df = pd.concat([df, row])
+    breakpoint()
 
 breakpoint()
 
